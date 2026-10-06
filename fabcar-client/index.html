@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>University IT Asset Management</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg: #0f1117;
+            --surface: #1a1d27;
+            --surface2: #222536;
+            --accent: #4f8ef7;
+            --accent2: #7c3aed;
+            --green: #22c55e;
+            --red: #ef4444;
+            --text: #e2e8f0;
+            --muted: #64748b;
+            --border: #2d3148;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'DM Sans', sans-serif;
+            min-height: 100vh;
+        }
+
+        header {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 20px 40px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        header .logo {
+            font-family: 'Space Mono', monospace;
+            font-size: 13px;
+            color: var(--accent);
+            background: rgba(79,142,247,0.1);
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid rgba(79,142,247,0.3);
+        }
+
+        header h1 {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        header span {
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 24px;
+            display: grid;
+            grid-template-columns: 340px 1fr;
+            gap: 32px;
+            align-items: start;
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        .card h2 {
+            font-family: 'Space Mono', monospace;
+            font-size: 12px;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        label {
+            display: block;
+            font-size: 12px;
+            color: var(--muted);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input, select {
+            width: 100%;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px 14px;
+            color: var(--text);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--accent);
+        }
+
+        input::placeholder { color: var(--muted); }
+
+        select option { background: var(--surface2); }
+
+        button {
+            width: 100%;
+            padding: 11px;
+            border: none;
+            border-radius: 8px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.1s;
+        }
+
+        button:hover { opacity: 0.88; transform: translateY(-1px); }
+        button:active { transform: translateY(0); }
+
+        .btn-primary { background: var(--accent); color: #fff; }
+        .btn-success { background: var(--green); color: #fff; }
+        .btn-purple { background: var(--accent2); color: #fff; }
+
+        .search-row {
+            display: flex;
+            gap: 8px;
+        }
+
+        .search-row input, .search-row select {
+            flex: 1;
+        }
+
+        .search-row button {
+            width: auto;
+            padding: 10px 18px;
+            white-space: nowrap;
+        }
+
+        /* Main panel */
+        .main-panel {}
+
+        .top-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .top-bar h2 {
+            font-family: 'Space Mono', monospace;
+            font-size: 13px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .badge {
+            background: rgba(79,142,247,0.15);
+            color: var(--accent);
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-family: 'Space Mono', monospace;
+        }
+
+        .asset-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .asset-table th {
+            font-family: 'Space Mono', monospace;
+            font-size: 10px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-align: left;
+            padding: 10px 14px;
+            background: var(--surface2);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .asset-table th:first-child { border-radius: 8px 0 0 0; }
+        .asset-table th:last-child { border-radius: 0 8px 0 0; }
+
+        .asset-table td {
+            padding: 12px 14px;
+            font-size: 14px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text);
+        }
+
+        .asset-table tr:last-child td { border-bottom: none; }
+
+        .asset-table tr:hover td {
+            background: rgba(255,255,255,0.02);
+        }
+
+        .asset-table tbody { background: var(--surface); }
+
+        .type-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .type-laptop { background: rgba(79,142,247,0.15); color: #4f8ef7; }
+        .type-projector { background: rgba(124,58,237,0.15); color: #a78bfa; }
+        .type-monitor { background: rgba(34,197,94,0.15); color: #22c55e; }
+        .type-default { background: rgba(100,116,139,0.15); color: #94a3b8; }
+
+        .key-badge {
+            font-family: 'Space Mono', monospace;
+            font-size: 12px;
+            color: var(--accent);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--muted);
+        }
+
+        .empty-state p { font-size: 14px; margin-top: 8px; }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 20px;
+            font-size: 14px;
+            display: none;
+            z-index: 999;
+            border-left: 3px solid var(--green);
+        }
+
+        .toast.error { border-left-color: var(--red); }
+        .toast.show { display: block; animation: fadeIn 0.3s ease; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .divider {
+            height: 1px;
+            background: var(--border);
+            margin: 16px 0;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo">FABRIC</div>
+    <h1>University IT Asset Management</h1>
+    <span>Hyperledger Fabric — mychannel</span>
+</header>
+
+<div class="container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+
+        <!-- Search -->
+        <div class="card">
+            <h2>Search Assets</h2>
+
+            <div class="form-group">
+                <label>By Asset ID</label>
+                <div class="search-row">
+                    <input type="text" id="searchId" placeholder="e.g. ASSET001" />
+                    <button class="btn-primary" onclick="searchById()">Go</button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>By Department</label>
+                <div class="search-row">
+                    <input type="text" id="searchDept" placeholder="e.g. CSE" />
+                    <button class="btn-primary" onclick="searchByDept()">Go</button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>By Device Type</label>
+                <div class="search-row">
+                    <select id="searchType">
+                        <option value="">Select type</option>
+                        <option value="Laptop">Laptop</option>
+                        <option value="Projector">Projector</option>
+                        <option value="Monitor">Monitor</option>
+                    </select>
+                    <button class="btn-primary" onclick="searchByType()">Go</button>
+                </div>
+            </div>
+
+            <div class="divider"></div>
+            <button class="btn-primary" onclick="getAllAssets()">Get All Assets</button>
+        </div>
+
+        <!-- Create Asset -->
+        <div class="card">
+            <h2>Create Asset</h2>
+
+            <div class="form-group">
+                <label>Asset ID</label>
+                <input type="text" id="createKey" placeholder="e.g. ASSET006" />
+            </div>
+            <div class="form-group">
+                <label>Device Type</label>
+                <select id="createType">
+                    <option value="">Select type</option>
+                    <option value="Laptop">Laptop</option>
+                    <option value="Projector">Projector</option>
+                    <option value="Monitor">Monitor</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Brand</label>
+                <input type="text" id="createBrand" placeholder="e.g. Dell" />
+            </div>
+            <div class="form-group">
+                <label>Purchase Year</label>
+                <input type="text" id="createYear" placeholder="e.g. 2023" />
+            </div>
+            <div class="form-group">
+                <label>Department</label>
+                <input type="text" id="createDept" placeholder="e.g. CSE" />
+            </div>
+            <div class="form-group">
+                <label>Assigned To</label>
+                <input type="text" id="createAssigned" placeholder="e.g. Dr. Ahmed" />
+            </div>
+            <button class="btn-success" onclick="createAsset()">Create Asset</button>
+        </div>
+
+        <!-- Update Assigned To -->
+        <div class="card">
+            <h2>Update Assigned To</h2>
+
+            <div class="form-group">
+                <label>Asset ID</label>
+                <input type="text" id="updateKey" placeholder="e.g. ASSET001" />
+            </div>
+            <div class="form-group">
+                <label>New Assignee</label>
+                <input type="text" id="updateAssigned" placeholder="e.g. Prof. Islam" />
+            </div>
+            <button class="btn-purple" onclick="updateAsset()">Update</button>
+        </div>
+
+    </div>
+
+    <!-- Main panel -->
+    <div class="main-panel">
+        <div class="top-bar">
+            <h2>Asset List</h2>
+            <span class="badge" id="countBadge">0 assets</span>
+        </div>
+
+        <div id="assetContainer">
+            <div class="empty-state">
+                <p>Click "Get All Assets" or search to view assets.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+    const API = 'http://localhost:3000';
+
+    function showToast(msg, isError = false) {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.className = 'toast show' + (isError ? ' error' : '');
+        setTimeout(() => t.className = 'toast', 3000);
+    }
+
+    function getTypeBadgeClass(type) {
+        if (!type) return 'type-default';
+        const t = type.toLowerCase();
+        if (t === 'laptop') return 'type-laptop';
+        if (t === 'projector') return 'type-projector';
+        if (t === 'monitor') return 'type-monitor';
+        return 'type-default';
+    }
+
+    function escapeHTML(value) {
+        return String(value ?? '-').replace(/[&<>"']/g, character => ({
+            '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+        }[character]));
+    }
+
+    async function requestJSON(url, options) {
+        const response = await fetch(url, options);
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.error || `Request failed (${response.status})`);
+        }
+        return data;
+    }
+
+    function renderAssets(assets) {
+        const container = document.getElementById('assetContainer');
+        document.getElementById('countBadge').textContent = assets.length + ' asset' + (assets.length !== 1 ? 's' : '');
+
+        if (assets.length === 0) {
+            container.innerHTML = '<div class="empty-state"><p>No assets found.</p></div>';
+            return;
+        }
+
+        let html = `<table class="asset-table">
+            <thead>
+                <tr>
+                    <th>Asset ID</th>
+                    <th>Device Type</th>
+                    <th>Brand</th>
+                    <th>Year</th>
+                    <th>Department</th>
+                    <th>Assigned To</th>
+                </tr>
+            </thead>
+            <tbody>`;
+
+        assets.forEach(a => {
+            const r = a.Record;
+            const badgeClass = getTypeBadgeClass(r.device_type);
+            html += `<tr>
+                <td><span class="key-badge">${escapeHTML(a.Key)}</span></td>
+                <td><span class="type-badge ${badgeClass}">${escapeHTML(r.device_type)}</span></td>
+                <td>${escapeHTML(r.brand)}</td>
+                <td>${escapeHTML(r.purchase_year)}</td>
+                <td>${escapeHTML(r.department)}</td>
+                <td>${escapeHTML(r.assigned_to)}</td>
+            </tr>`;
+        });
+
+        html += '</tbody></table>';
+        container.innerHTML = html;
+    }
+
+    async function getAllAssets() {
+        try {
+            const data = await requestJSON(`${API}/assets`);
+            renderAssets(data);
+        } catch (e) {
+            showToast(e.message, true);
+        }
+    }
+
+    async function searchById() {
+        const key = document.getElementById('searchId').value.trim();
+        if (!key) { showToast('Enter an Asset ID', true); return; }
+        try {
+            const data = await requestJSON(`${API}/assets/${encodeURIComponent(key)}`);
+            renderAssets(data);
+        } catch (e) {
+            showToast(e.message, true);
+        }
+    }
+
+    async function searchByDept() {
+        const dept = document.getElementById('searchDept').value.trim();
+        if (!dept) { showToast('Enter a department name', true); return; }
+        try {
+            const data = await requestJSON(`${API}/assets?${new URLSearchParams({ department: dept })}`);
+            renderAssets(data);
+        } catch (e) {
+            showToast(e.message, true);
+        }
+    }
+
+    async function searchByType() {
+        const type = document.getElementById('searchType').value;
+        if (!type) { showToast('Select a device type', true); return; }
+        try {
+            const data = await requestJSON(`${API}/assets?${new URLSearchParams({ device_type: type })}`);
+            renderAssets(data);
+        } catch (e) {
+            showToast(e.message, true);
+        }
+    }
+
+    async function createAsset() {
+        const key = document.getElementById('createKey').value.trim();
+        const device_type = document.getElementById('createType').value;
+        const brand = document.getElementById('createBrand').value.trim();
+        const purchase_year = document.getElementById('createYear').value.trim();
+        const department = document.getElementById('createDept').value.trim();
+        const assigned_to = document.getElementById('createAssigned').value.trim();
+
+        if (!key || !device_type || !brand || !purchase_year || !department || !assigned_to) {
+            showToast('Fill in all fields', true); return;
+        }
+
+        try {
+            await requestJSON(`${API}/assets`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ key, device_type, brand, purchase_year, department, assigned_to })
+            });
+            showToast('Asset created successfully!');
+            getAllAssets();
+        } catch (e) {
+            showToast(e.message, true);
+        }
+    }
+
+    async function updateAsset() {
+        const key = document.getElementById('updateKey').value.trim();
+        const assigned_to = document.getElementById('updateAssigned').value.trim();
+
+        if (!key || !assigned_to) { showToast('Fill in all fields', true); return; }
+
+        try {
+            await requestJSON(`${API}/assets/${encodeURIComponent(key)}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ assigned_to })
+            });
+            showToast('Asset updated successfully!');
+            getAllAssets();
+        } catch (e) {
+            showToast(e.message, true);
+        }
+    }
+
+    // Load on start
+    getAllAssets();
+</script>
+
+</body>
+</html>
